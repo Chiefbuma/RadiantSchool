@@ -1,0 +1,73 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    // Collection: users
+    // Fields: uid, email, role, status, createdAt
+    
+    // Collection: programmes
+    // Fields: id, name, code, credential, status
+    
+    // Collection: applications
+    // Fields: id, applicantUid, programmeId, firstName, lastName, status
+    
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+         request.auth.token.email == "georgebuma.jb@gmail.com");
+    }
+
+    function hasRole(role) {
+      return isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == role;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isAuthenticated() && request.resource.data.uid == request.auth.uid;
+      allow update: if (isOwner(userId) && request.resource.data.role == resource.data.role) || isAdmin();
+    }
+
+    match /programmes/{programmeId} {
+      allow read: if true; // Publicly readable
+      allow write: if isAdmin();
+    }
+
+    match /applications/{applicationId} {
+      allow read: if isAuthenticated() && (request.auth.uid == resource.data.applicantUid || isAdmin() || hasRole('registrar'));
+      allow create: if isAuthenticated() && request.resource.data.applicantUid == request.auth.uid;
+      allow update: if isAuthenticated() && (request.auth.uid == resource.data.applicantUid || isAdmin() || hasRole('registrar'));
+    }
+
+    match /students/{studentId} {
+      allow read: if isAuthenticated() && (request.auth.uid == resource.data.userUid || isAdmin() || hasRole('registrar') || hasRole('lecturer'));
+      allow write: if isAdmin() || hasRole('registrar');
+    }
+
+    match /lessons/{lessonId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() || hasRole('lecturer') || hasRole('dean');
+    }
+
+    match /exams/{examId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() || hasRole('lecturer') || hasRole('dean');
+    }
+  }
+}

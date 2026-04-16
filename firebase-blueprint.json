@@ -1,0 +1,123 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "System user account",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "registrar", "dean", "finance", "lecturer", "student", "guardian"] },
+        "institutionId": { "type": "string" },
+        "campusId": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "inactive", "blocked"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "Programme": {
+      "title": "Programme",
+      "description": "Academic programme offered by the college",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "code": { "type": "string" },
+        "departmentId": { "type": "string" },
+        "credential": { "type": "string", "enum": ["certificate", "diploma", "higher_diploma", "short_course"] },
+        "durationMonths": { "type": "number" },
+        "status": { "type": "string", "enum": ["active", "inactive"] }
+      },
+      "required": ["name", "code", "credential"]
+    },
+    "Application": {
+      "title": "Application",
+      "description": "Student application for admission",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "applicantUid": { "type": "string" },
+        "programmeId": { "type": "string" },
+        "intakeId": { "type": "string" },
+        "firstName": { "type": "string" },
+        "lastName": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "status": { "type": "string", "enum": ["draft", "submitted", "under_review", "offered", "accepted", "rejected"] },
+        "submittedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["applicantUid", "programmeId", "firstName", "lastName", "status"]
+    },
+    "Student": {
+      "title": "Student",
+      "description": "Enrolled student record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userUid": { "type": "string" },
+        "studentNo": { "type": "string" },
+        "firstName": { "type": "string" },
+        "lastName": { "type": "string" },
+        "programmeId": { "type": "string" },
+        "balance": { "type": "number" },
+        "status": { "type": "string", "enum": ["active", "graduated", "suspended", "withdrawn"] }
+      },
+      "required": ["userUid", "studentNo", "firstName", "lastName", "status"]
+    },
+    "Lesson": {
+      "title": "Lesson",
+      "description": "A teaching session or material",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "lecturerId": { "type": "string" },
+        "programmeId": { "type": "string" },
+        "date": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "lecturerId", "programmeId"]
+    },
+    "Exam": {
+      "title": "Exam",
+      "description": "An examination event",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "date": { "type": "string", "format": "date-time" },
+        "lecturerId": { "type": "string" },
+        "programmeId": { "type": "string" },
+        "venue": { "type": "string" }
+      },
+      "required": ["title", "date", "lecturerId", "programmeId"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile data"
+    },
+    "/programmes/{programmeId}": {
+      "schema": "Programme",
+      "description": "Academic programmes"
+    },
+    "/applications/{applicationId}": {
+      "schema": "Application",
+      "description": "Admission applications"
+    },
+    "/students/{studentId}": {
+      "schema": "Student",
+      "description": "Student records"
+    },
+    "/lessons/{lessonId}": {
+      "schema": "Lesson",
+      "description": "Lesson materials and schedules"
+    },
+    "/exams/{examId}": {
+      "schema": "Exam",
+      "description": "Exam schedules"
+    }
+  }
+}
