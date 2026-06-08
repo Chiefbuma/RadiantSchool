@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Teko:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Roboto", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Teko", sans-serif;
+
+  --color-primary: #c85828; /* PDF brand orange */
+  --color-dark: #182848; /* PDF brand navy */
+  --color-accent: #f8e0d8; /* PDF pale orange */
+}
+
+@layer base {
+  :root {
+    --header-offset: 60px;
+  }
+
+  @media (min-width: 1024px) {
+    :root {
+      --header-offset: 156px;
+    }
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-snap-type: y proximity;
+    scroll-padding-top: var(--header-offset);
+  }
+  
+  body {
+    @apply bg-white text-gray-700 selection:bg-primary selection:text-white overflow-x-hidden antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display text-dark uppercase tracking-wider;
+  }
+}
+
+@layer utilities {
+  .snap-section {
+    scroll-snap-align: start;
+    scroll-snap-stop: normal;
+    min-height: 100vh;
+    min-height: 100dvh;
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hero-section {
+    min-height: calc(100vh - var(--header-offset));
+    min-height: calc(100dvh - var(--header-offset));
+  }
+
+  /* Premium stacking effect for larger screens with sufficient vertical space */
+  @media (min-width: 1024px) and (min-height: 800px) {
+    .snap-section {
+      position: sticky;
+      top: var(--header-offset);
+    }
+  }
+
+  .content-container {
+    @apply w-full max-w-7xl mx-auto px-6 sm:px-8 md:px-12 lg:px-16;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 10px rgba(200, 88, 40, 0.2);
+  }
+  
+  .skew-18 {
+    transform: skewX(18deg);
+  }
+  
+  .unskew-18 {
+    transform: skewX(-18deg);
+  }
+
+  .skew-28 {
+    transform: skewX(28deg);
+  }
+
+  .unskew-28 {
+    transform: skewX(-28deg);
+  }
+
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .animate-marquee {
+    animation: marquee 30s linear infinite;
+  }
+}

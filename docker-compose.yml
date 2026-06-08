@@ -1,0 +1,56 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rhit-web
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      APP_URL: ${APP_URL:-http://localhost:3001}
+      DATABASE_URL: ${DATABASE_URL:-postgresql://rhit:rhit_password@postgres:5432/rhit}
+      NODE_ENV: production
+    ports:
+      - "${WEB_PORT:-3001}:3000"
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: rhit-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-rhit}
+      POSTGRES_USER: ${POSTGRES_USER:-rhit}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-rhit_password}
+    ports:
+      - "${POSTGRES_PORT:-55432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: rhit-n8n
+    environment:
+      N8N_HOST: ${N8N_HOST:-localhost}
+      N8N_PORT: 5678
+      N8N_PROTOCOL: ${N8N_PROTOCOL:-http}
+      WEBHOOK_URL: ${N8N_WEBHOOK_URL:-http://localhost:5688/}
+      N8N_SECURE_COOKIE: ${N8N_SECURE_COOKIE:-false}
+      GENERIC_TIMEZONE: ${GENERIC_TIMEZONE:-Africa/Nairobi}
+      TZ: ${TZ:-Africa/Nairobi}
+    ports:
+      - "${N8N_PORT:-5688}:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  n8n_data:
