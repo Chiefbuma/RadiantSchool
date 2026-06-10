@@ -622,42 +622,42 @@ export default async function AdminCrudPage({ params }: { params: Promise<{ modu
   const deleteAction = deleteRecord.bind(null, module);
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6 px-4 py-8 md:px-6">
+    <div className="portal-page space-y-6">
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
         <div>
-          <p className="mb-2 text-xs font-black uppercase tracking-[0.3em] text-primary">Admin CRUD</p>
-          <h1 className="text-4xl font-black leading-none text-dark md:text-6xl">{config.title}</h1>
-          <p className="mt-3 max-w-3xl text-dark/60">{config.description}</p>
+          <p className="mb-1 text-[10px] font-black uppercase tracking-[0.2em] text-primary">Administration</p>
+          <h1 className="text-2xl font-bold text-dark md:text-3xl">{config.title}</h1>
+          <p className="mt-2 max-w-3xl text-sm text-dark/60">{config.description}</p>
         </div>
         <a href="/portal/admin" className="text-sm font-black uppercase tracking-widest text-primary">Back to Dashboard</a>
       </div>
 
       {config.insertSql && config.fields.length > 0 ? (
-        <section className="border border-dark/10 bg-white p-5 shadow-sm">
+        <section className="portal-card p-5">
           <div className="mb-4 flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center bg-primary/10 text-primary"><Plus size={20} /></div>
-            <h2 className="m-0 text-2xl font-black text-dark">Create {config.title.slice(0, -1) || config.title}</h2>
+            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary/10 text-primary"><Plus size={18} /></div>
+            <h2 className="m-0 text-base font-bold text-dark">Create {config.title.slice(0, -1) || config.title}</h2>
           </div>
           <form action={createAction} className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {config.fields.map((field) => (
               <label key={field.name} className={field.type === "textarea" ? "md:col-span-2 xl:col-span-3" : ""}>
                 <span className="mb-2 block text-[10px] font-black uppercase tracking-widest text-dark/50">{field.label}</span>
                 {field.type === "textarea" ? (
-                  <textarea name={field.name} required={field.required} placeholder={field.placeholder} rows={3} className="w-full border border-dark/10 bg-accent/20 px-3 py-3 text-sm outline-none focus:border-primary" />
+                  <textarea name={field.name} required={field.required} placeholder={field.placeholder} rows={3} className="portal-field" />
                 ) : field.type === "select" ? (
-                  <select name={field.name} required={field.required} className="w-full border border-dark/10 bg-accent/20 px-3 py-3 text-sm outline-none focus:border-primary">
+                  <select name={field.name} required={field.required} className="portal-field">
                     <option value="">Select {field.label}</option>
                     {(options[field.name] ?? []).map((option) => (
                       <option key={option.value} value={option.value}>{option.label}</option>
                     ))}
                   </select>
                 ) : (
-                  <input name={field.name} required={field.required} type={field.type ?? "text"} placeholder={field.placeholder} className="w-full border border-dark/10 bg-accent/20 px-3 py-3 text-sm outline-none focus:border-primary" />
+                  <input name={field.name} required={field.required} type={field.type ?? "text"} placeholder={field.placeholder} className="portal-field" />
                 )}
               </label>
             ))}
             <div className="flex items-end">
-              <button className="flex w-full items-center justify-center gap-2 bg-primary px-4 py-3 text-sm font-black uppercase tracking-widest text-white hover:bg-dark">
+              <button className="flex h-10 w-full items-center justify-center gap-2 rounded-md bg-primary px-4 text-xs font-black uppercase tracking-widest text-white hover:bg-dark">
                 <Save size={16} /> Save
               </button>
             </div>
@@ -665,20 +665,20 @@ export default async function AdminCrudPage({ params }: { params: Promise<{ modu
         </section>
       ) : null}
 
-      <section className="overflow-hidden border border-dark/10 bg-white shadow-sm">
+      <section className="portal-table-wrap">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[760px] border-collapse text-left text-sm">
-            <thead className="bg-dark text-white">
+            <thead className="bg-[hsl(var(--muted))] text-[hsl(var(--muted-foreground))]">
               <tr>
                 {config.columns.map((column) => (
-                  <th key={column.key} className="px-4 py-3 text-xs font-black uppercase tracking-widest">{column.label}</th>
+                  <th key={column.key} className="px-4 py-3 text-[10px] font-black uppercase tracking-widest">{column.label}</th>
                 ))}
-                <th className="px-4 py-3 text-xs font-black uppercase tracking-widest">Actions</th>
+                <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest">Actions</th>
               </tr>
             </thead>
             <tbody>
               {rowsResult.rows.map((row) => (
-                <tr key={String(row[config.idColumn])} className="border-b border-dark/5 hover:bg-accent/20">
+                <tr key={String(row[config.idColumn])} className="border-b border-[hsl(var(--border))] hover:bg-[hsl(var(--muted))]/60">
                   {config.columns.map((column) => (
                     <td key={column.key} className="max-w-[280px] px-4 py-3 align-top">
                       {column.key === config.badgeKey ? (

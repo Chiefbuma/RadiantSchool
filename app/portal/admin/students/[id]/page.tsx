@@ -171,15 +171,15 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
 }
 
 function inputClass() {
-  return "w-full border border-dark/10 bg-accent/20 px-3 py-3 text-sm outline-none focus:border-primary";
+  return "portal-field";
 }
 
 function Panel({ title, icon, children }: { title: string; icon: ReactNode; children: ReactNode }) {
   return (
-    <section className="border border-dark/10 bg-white p-5 shadow-sm">
+    <section className="portal-card p-5">
       <div className="mb-4 flex items-center gap-3 border-b border-dark/5 pb-3">
-        <div className="flex h-10 w-10 items-center justify-center bg-primary/10 text-primary">{icon}</div>
-        <h2 className="m-0 text-2xl font-black text-dark">{title}</h2>
+        <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary/10 text-primary">{icon}</div>
+        <h2 className="m-0 text-base font-bold text-dark">{title}</h2>
       </div>
       {children}
     </section>
@@ -398,12 +398,12 @@ export default async function AdminStudentDashboardPage({ params }: { params: Pr
   const totalBalance = invoices.rows.reduce((sum, invoice) => sum + Number(invoice.balance_kes), 0);
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6 px-4 py-8 md:px-6">
+    <div className="portal-page space-y-6">
       <div className="flex flex-col justify-between gap-4 border-b border-dark/10 pb-5 lg:flex-row lg:items-end">
         <div>
           <a href="/portal/admin/students" className="text-xs font-black uppercase tracking-widest text-primary">Back to Students</a>
-          <h1 className="mt-2 text-4xl font-black leading-none text-dark md:text-6xl">{student.full_name}</h1>
-          <p className="mt-3 text-dark/60">{student.student_number} · {enrollment?.program ?? "No program assigned"} · {student.status}</p>
+          <h1 className="mt-2 text-2xl font-bold text-dark md:text-3xl">{student.full_name}</h1>
+          <p className="mt-2 text-sm text-dark/60">{student.student_number} · {enrollment?.program ?? "No program assigned"} · {student.status}</p>
         </div>
         <div className="grid grid-cols-2 gap-3 text-right">
           <div className="bg-dark px-5 py-4 text-white">

@@ -129,10 +129,10 @@ async function getAdminData() {
 
 function Card({ title, children, icon }: { title: string; children: ReactNode; icon: ReactNode }) {
   return (
-    <section className="border border-dark/10 bg-white p-5 shadow-[0_16px_40px_rgba(24,40,72,0.08)]">
+    <section className="portal-card p-5">
       <div className="mb-4 flex items-center gap-3 border-b border-dark/5 pb-3">
-        <div className="flex h-10 w-10 items-center justify-center bg-primary/10 text-primary">{icon}</div>
-        <h2 className="m-0 text-2xl font-black leading-none text-dark">{title}</h2>
+        <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary/10 text-primary">{icon}</div>
+        <h2 className="m-0 text-base font-bold text-dark">{title}</h2>
       </div>
       {children}
     </section>
@@ -144,11 +144,11 @@ export default async function AdminPortalPage() {
   const data = await getAdminData();
 
   return (
-    <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 md:px-6">
+    <div className="portal-page space-y-6">
       <div>
-        <p className="mb-2 text-xs font-black uppercase tracking-[0.3em] text-primary">Admin Portal</p>
-        <h1 className="text-4xl font-black leading-none text-dark md:text-6xl">Institution Management System</h1>
-        <p className="mt-4 max-w-3xl text-dark/60">
+        <p className="mb-1 text-[10px] font-black uppercase tracking-[0.2em] text-primary">Admin Portal</p>
+        <h1 className="text-2xl font-bold text-dark md:text-3xl">Institution Management System</h1>
+        <p className="mt-2 max-w-3xl text-sm text-dark/60">
           Operational dashboard for admissions, onboarding, academics, finance, exams, resources,
           requests, clearance, graduation, and institutional setup.
         </p>
@@ -156,7 +156,7 @@ export default async function AdminPortalPage() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
         {data.counts.map((item) => (
-          <div key={item.label} className="border-l-4 border-primary bg-white p-4 shadow-sm">
+          <div key={item.label} className="portal-card border-l-4 border-l-primary p-4">
             <p className="m-0 text-[10px] font-black uppercase tracking-widest text-dark/40">{item.label}</p>
             <p className="m-0 mt-2 text-3xl font-black text-dark">{Number(item.value).toLocaleString("en-KE")}</p>
           </div>
