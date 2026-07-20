@@ -471,12 +471,10 @@ export default function Home() {
 
       {/* Hero Section - Editorial Slideshow */}
       <section id="home" className="snap-section hero-section z-10 overflow-hidden bg-dark">
-        <div className="absolute inset-y-0 left-0 z-20 hidden w-[64%] bg-white lg:block [clip-path:ellipse(74%_96%_at_8%_50%)]">
+        <div className="hero-copy-bg absolute inset-y-0 left-0 z-20 w-[64%] bg-white [clip-path:ellipse(74%_96%_at_8%_50%)]">
           <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(24,40,72,0.035)_25%,transparent_25%),linear-gradient(225deg,rgba(24,40,72,0.035)_25%,transparent_25%),linear-gradient(45deg,rgba(24,40,72,0.035)_25%,transparent_25%),linear-gradient(315deg,rgba(24,40,72,0.035)_25%,#ffffff_25%)] bg-[size:36px_36px]"></div>
         </div>
-        <div className="absolute inset-0 z-0 bg-white lg:hidden"></div>
-
-        <div className="absolute inset-y-0 right-0 z-10 hidden w-[58%] overflow-hidden lg:block">
+        <div className="hero-media absolute inset-y-0 right-0 z-10 w-[58%] overflow-hidden">
           <AnimatePresence mode="wait">
             <motion.div
               key={`hero-image-${currentSlide}`}
@@ -496,27 +494,11 @@ export default function Home() {
           </AnimatePresence>
         </div>
 
-        <div className="absolute inset-x-0 top-0 z-10 h-52 lg:hidden">
-          <AnimatePresence mode="wait">
-            <motion.img
-              key={`mobile-hero-image-${currentSlide}`}
-              src={heroSlides[currentSlide].src}
-              alt={heroSlides[currentSlide].caption}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.8 }}
-              className="h-full w-full object-cover"
-            />
-          </AnimatePresence>
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white"></div>
-        </div>
-
         <div className="absolute left-0 top-0 z-40 hidden h-full w-2 bg-primary lg:block"></div>
 
-        <div className="content-container relative z-30 flex flex-1 items-center border-l-4 border-primary pb-44 pt-52 lg:border-l-0 lg:pb-40 lg:pt-8">
-          <div className="w-full lg:w-[50%] xl:w-[48%]">
-            <div className="mb-5 flex items-center gap-2">
+        <div className="hero-content content-container relative z-30 flex flex-1 items-center border-l-4 border-primary pb-44 pt-8 lg:border-l-0 lg:pb-40">
+          <div className="hero-copy w-[52%] lg:w-[50%] xl:w-[48%]">
+            <div className="hero-dots mb-5 flex items-center gap-2">
               {announcements.map((_, i) => (
                 <button
                   key={i}
@@ -537,17 +519,17 @@ export default function Home() {
                 transition={{ duration: 0.55 }}
                 className="max-w-full overflow-hidden pr-2 lg:pr-6"
               >
-                <div className="mb-4 inline-flex border-l-4 border-primary bg-white px-4 py-2 shadow-[0_12px_30px_rgba(24,40,72,0.08)]">
+                <div className="hero-label mb-4 inline-flex border-l-4 border-primary bg-white px-4 py-2 shadow-[0_12px_30px_rgba(24,40,72,0.08)]">
                   <span className="font-black uppercase tracking-[0.28em] text-primary text-xs">
                     {announcements[currentSlide].type}
                   </span>
                 </div>
 
-                <h2 className="mb-4 max-w-full break-words text-3xl font-black leading-[0.96] tracking-tight text-dark sm:text-4xl md:text-5xl xl:text-6xl">
+                <h2 className="hero-title mb-4 max-w-full break-words text-3xl font-black leading-[0.96] tracking-tight text-dark sm:text-4xl md:text-5xl xl:text-6xl">
                   {announcements[currentSlide].title}
                 </h2>
 
-                <div className="mb-4 flex flex-wrap items-center gap-3 text-primary">
+                <div className="hero-meta mb-4 flex flex-wrap items-center gap-3 text-primary">
                   <span className="flex items-center gap-2 text-xs font-black uppercase tracking-widest">
                     <Calendar size={14} />
                     {announcements[currentSlide].date}
@@ -558,11 +540,11 @@ export default function Home() {
                   </span>
                 </div>
 
-                <p className="mb-7 max-w-full text-base font-medium leading-relaxed text-primary md:text-lg xl:text-xl">
+                <p className="hero-description mb-7 max-w-full text-base font-medium leading-relaxed text-primary md:text-lg xl:text-xl">
                   {announcements[currentSlide].description}
                 </p>
 
-                <div className="flex flex-col gap-3 sm:flex-row">
+                <div className="hero-actions flex flex-row gap-3">
                   <a href="#apply" className="inline-flex items-center justify-center gap-3 rounded-none border-l-4 border-primary bg-white px-8 py-4 text-sm font-black uppercase tracking-widest text-dark shadow-[0_18px_45px_rgba(24,40,72,0.12)] transition-colors hover:bg-primary hover:text-white">
                     Apply Now <ChevronRight size={18} />
                   </a>
@@ -591,25 +573,25 @@ export default function Home() {
         </AnimatePresence>
 
         <div className="absolute bottom-0 left-1/2 z-50 w-[calc(100%-2rem)] max-w-6xl -translate-x-1/2 bg-[#e7e7e7] shadow-[0_-18px_50px_rgba(24,40,72,0.12)]">
-          <div className="grid grid-cols-1 divide-y divide-dark/10 sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4">
+          <div className="hero-highlights grid grid-cols-4 divide-x divide-dark/10">
             {heroHighlights.map((item, i) => (
               <button
                 key={item.title}
                 type="button"
                 onClick={() => setCurrentSlide(i % announcements.length)}
-                className="group flex min-h-[108px] items-center gap-4 px-5 py-4 text-left transition-colors hover:bg-white"
+                className="hero-highlight group flex min-h-[108px] items-center gap-4 px-5 py-4 text-left transition-colors hover:bg-white"
               >
                 <span className="text-dark transition-colors group-hover:text-primary">
                   {item.icon}
                 </span>
                 <span className="min-w-0">
-                  <span className="block text-xs font-semibold text-dark/35">
+                  <span className="hero-highlight-eyebrow block text-xs font-semibold text-dark/35">
                     {item.eyebrow}
                   </span>
-                  <span className="block font-display text-xl font-bold uppercase leading-none tracking-wide text-dark">
+                  <span className="hero-highlight-title block font-display text-xl font-bold uppercase leading-none tracking-wide text-dark">
                     {item.title}
                   </span>
-                  <span className="mt-3 block text-sm italic text-dark/60">
+                  <span className="hero-highlight-note mt-3 block text-sm italic text-dark/60">
                     {item.note}
                   </span>
                 </span>
@@ -1057,7 +1039,7 @@ export default function Home() {
 
       {/* WhatsApp admissions agent */}
       <a
-        href="https://wa.me/254712588588?text=Hello%20RHTI%2C%20I%20would%20like%20to%20ask%20about%20admissions%20and%20programs."
+        href="https://wa.me/254707187314?text=Hello%20RHTI%2C%20I%20would%20like%20to%20ask%20about%20admissions%20and%20programs."
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-24 right-4 md:right-8 z-[120] flex items-center gap-3 rounded-full bg-[#25D366] px-5 py-4 text-white shadow-2xl transition-colors hover:bg-dark"

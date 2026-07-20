@@ -1,0 +1,2 @@
+import{NextResponse}from"next/server";import{deleteEntity,entityPermission}from"@/lib/portal-entities";import{portalErrorResponse,requestId,requireApiPermission}from"@/lib/portal-security";
+export async function DELETE(r:Request,{params}:{params:Promise<{entity:string,id:string}>}){const c=requestId(r);try{const{entity,id}=await params;const u=await requireApiPermission(entityPermission(entity));return NextResponse.json(await deleteEntity(entity,id,u,c));}catch(e){return portalErrorResponse(e,c);}}

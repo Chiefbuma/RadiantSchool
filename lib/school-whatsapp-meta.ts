@@ -1,0 +1,8 @@
+const apiVersion=()=>process.env.META_GRAPH_API_VERSION?.trim()||'v25.0';
+const required=(name:string)=>{const value=process.env[name]?.trim();if(!value)throw new Error(`${name} is not configured`);return value;};
+export const normalizeWhatsAppPhone=(value:string)=>value.replace(/\D/g,'');
+
+async function send(payload:Record<string,unknown>){const phoneId=required('SCHOOL_META_WHATSAPP_PHONE_NUMBER_ID');const response=await fetch(`https://graph.facebook.com/${apiVersion()}/${encodeURIComponent(phoneId)}/messages`,{method:'POST',headers:{Authorization:`Bearer ${required('SCHOOL_META_WHATSAPP_ACCESS_TOKEN')}`,'Content-Type':'application/json'},body:JSON.stringify({messaging_product:'whatsapp',recipient_type:'individual',...payload}),cache:'no-store'});const data=await response.json().catch(()=>({}));if(!response.ok)throw new Error((data as any)?.error?.message||`Meta WhatsApp returned HTTP ${response.status}`);return data as any;}
+export const sendSchoolText=(to:string,body:string)=>send({to:normalizeWhatsAppPhone(to),type:'text',text:{preview_url:false,body:body.slice(0,4096)}});
+export const sendSchoolDocument=(to:string,link:string,filename:string,caption:string)=>send({to:normalizeWhatsAppPhone(to),type:'document',document:{link,filename,caption}});
+export const sendSchoolTemplate=(to:string,name:string,parameters:string[],documentLink?:string)=>send({to:normalizeWhatsAppPhone(to),type:'template',template:{name,language:{code:process.env.SCHOOL_META_TEMPLATE_LANGUAGE||'en'},components:[...(documentLink?[{type:'header',parameters:[{type:'document',document:{link:documentLink,filename:'RHTI-Offer-Letter.pdf'}}]}]:[]),...(parameters.length?[{type:'body',parameters:parameters.map(text=>({type:'text',text}))}]:[])]}});

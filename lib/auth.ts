@@ -35,14 +35,18 @@ export function hashPassword(password: string) {
   return `scrypt:${salt}:${hash}`;
 }
 
-export async function createSession(userId: string) {
+export async function createSession(userId: string, metadata?: { ipAddress?: string | null; userAgent?: string | null }) {
   const token = crypto.randomBytes(32).toString("hex");
   const tokenHash = hashToken(token);
   const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 12);
 
+  await query("SELECT portal_expire_operational_data()");
+  await query(`DELETE FROM portal_sessions WHERE id IN (
+    SELECT id FROM portal_sessions WHERE user_id=$1 ORDER BY created_at DESC OFFSET 4
+  )`, [userId]);
   await query(
-    "INSERT INTO portal_sessions (user_id, token_hash, expires_at) VALUES ($1, $2, $3)",
-    [userId, tokenHash, expiresAt]
+    "INSERT INTO portal_sessions (user_id, token_hash, expires_at, ip_address, user_agent) VALUES ($1, $2, $3, NULLIF($4,'')::inet, $5)",
+    [userId, tokenHash, expiresAt, metadata?.ipAddress ?? null, metadata?.userAgent?.slice(0, 500) ?? null]
   );
 
   return { token, expiresAt };

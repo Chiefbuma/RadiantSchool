@@ -1,0 +1,2 @@
+import{NextResponse}from'next/server';import{dispatchWhatsAppOutbox}from'@/lib/school-whatsapp-agent';
+export async function POST(request:Request){const expected=process.env.WHATSAPP_DISPATCH_SECRET?.trim();if(!expected||request.headers.get('authorization')!==`Bearer ${expected}`)return NextResponse.json({error:'Unauthorized'},{status:401});return NextResponse.json({processed:await dispatchWhatsAppOutbox(25)});}

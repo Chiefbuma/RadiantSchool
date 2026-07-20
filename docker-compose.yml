@@ -11,6 +11,21 @@ services:
       APP_URL: ${APP_URL:-http://localhost:3001}
       DATABASE_URL: ${DATABASE_URL:-postgresql://rhit:rhit_password@postgres:5432/rhit}
       NODE_ENV: production
+      PUBLIC_APP_URL: ${PUBLIC_APP_URL:-http://localhost:3001}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash-lite}
+      GEMINI_TIMEOUT_SECONDS: ${GEMINI_TIMEOUT_SECONDS:-15}
+      META_GRAPH_API_VERSION: ${META_GRAPH_API_VERSION:-v25.0}
+      SCHOOL_META_APP_ID: ${SCHOOL_META_APP_ID:-2221357331931817}
+      SCHOOL_META_WHATSAPP_BUSINESS_ACCOUNT_ID: ${SCHOOL_META_WHATSAPP_BUSINESS_ACCOUNT_ID:-980908518150007}
+      SCHOOL_META_WHATSAPP_PHONE_NUMBER_ID: ${SCHOOL_META_WHATSAPP_PHONE_NUMBER_ID:-1276369935549330}
+      SCHOOL_META_WHATSAPP_VERIFY_TOKEN: ${SCHOOL_META_WHATSAPP_VERIFY_TOKEN:-}
+      SCHOOL_META_APP_SECRET: ${SCHOOL_META_APP_SECRET:-}
+      SCHOOL_META_WHATSAPP_ACCESS_TOKEN: ${SCHOOL_META_WHATSAPP_ACCESS_TOKEN:-}
+      SCHOOL_META_TEMPLATE_LANGUAGE: ${SCHOOL_META_TEMPLATE_LANGUAGE:-en}
+      SCHOOL_WHATSAPP_STATUS_TEMPLATE: ${SCHOOL_WHATSAPP_STATUS_TEMPLATE:-rhti_application_status_v1}
+      SCHOOL_WHATSAPP_OFFER_TEMPLATE: ${SCHOOL_WHATSAPP_OFFER_TEMPLATE:-rhti_offer_letter_v1}
+      WHATSAPP_DISPATCH_SECRET: ${WHATSAPP_DISPATCH_SECRET:-}
     ports:
       - "${WEB_PORT:-3001}:3000"
     restart: unless-stopped
@@ -34,23 +49,5 @@ services:
       retries: 5
     restart: unless-stopped
 
-  n8n:
-    image: n8nio/n8n:latest
-    container_name: rhit-n8n
-    environment:
-      N8N_HOST: ${N8N_HOST:-localhost}
-      N8N_PORT: 5678
-      N8N_PROTOCOL: ${N8N_PROTOCOL:-http}
-      WEBHOOK_URL: ${N8N_WEBHOOK_URL:-http://localhost:5688/}
-      N8N_SECURE_COOKIE: ${N8N_SECURE_COOKIE:-false}
-      GENERIC_TIMEZONE: ${GENERIC_TIMEZONE:-Africa/Nairobi}
-      TZ: ${TZ:-Africa/Nairobi}
-    ports:
-      - "${N8N_PORT:-5688}:5678"
-    volumes:
-      - n8n_data:/home/node/.n8n
-    restart: unless-stopped
-
 volumes:
   postgres_data:
-  n8n_data:

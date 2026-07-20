@@ -1,6 +1,6 @@
 # Radiant Hospital Training Institute
 
-Next.js website, admissions database, n8n automation environment, and planning blueprint for the Radiant Hospital Training Institute management system.
+Next.js website, admissions database, and planning blueprint for the Radiant Hospital Training Institute management system.
 
 ## Run Locally
 
@@ -17,15 +17,12 @@ Next.js website, admissions database, n8n automation environment, and planning b
 1. Copy `.env.example` to `.env`.
 2. Run: `docker compose up --build`
 3. Open the website: `http://localhost:3001`
-4. Open n8n: `http://localhost:5688`
-
 Postgres is exposed on `localhost:55432`.
 
 Current services:
 
 - `web`: Next.js website and API routes.
 - `postgres`: Main application database.
-- `n8n`: Workflow automation server for WhatsApp, admissions automation, notifications, and integrations.
 
 ## Implemented Portal Foundation
 
@@ -38,7 +35,6 @@ The current implementation includes a working first version of the institution m
 - Public website portal buttons route to `http://localhost:3001/login`.
 - Relational Postgres schema for users, roles, permissions, sessions, institution setup, programs, modules, cohorts, classes, students, enrollments, resources, timetable, attendance, fees, payments, assessments, marks, attachment, requests, clearance, graduation, and audit logs.
 - Seed data from the RHTI profile, website content, PDFs, and current course information.
-- n8n remains available for WhatsApp workflow automation at `http://localhost:5688`.
 
 Seeded local credentials:
 

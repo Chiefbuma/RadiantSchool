@@ -1,0 +1,2 @@
+import{NextResponse}from"next/server";import{createEntity,entityPermission}from"@/lib/portal-entities";import{portalErrorResponse,requestId,requireApiPermission}from"@/lib/portal-security";
+export async function POST(r:Request,{params}:{params:Promise<{entity:string}>}){const c=requestId(r);try{const{entity}=await params;const u=await requireApiPermission(entityPermission(entity));return NextResponse.json(await createEntity(entity,await r.json(),u,c),{status:201});}catch(e){return portalErrorResponse(e,c);}}

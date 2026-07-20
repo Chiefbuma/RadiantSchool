@@ -1,0 +1,22 @@
+import type { PortalUser } from './auth';
+import { transaction } from './db';
+import { PortalError, requiredText } from './portal-security';
+
+const statuses=['active','deferred','suspended','completed','withdrawn','graduated'];
+export async function updateStudent(admissionNumber:string, raw:any, actor:PortalUser, correlationId:string){
+  return transaction(async c=>{
+    const found=await c.query<any>('SELECT * FROM portal_students WHERE student_number=$1 AND deleted_at IS NULL FOR UPDATE',[requiredText(admissionNumber,'Admission number',80)]);
+    if(!found.rowCount)throw new PortalError(404,'Student not found','NOT_FOUND'); const before=found.rows[0];
+    const status=String(raw.status??before.status);if(!statuses.includes(status))throw new PortalError(400,'Invalid student status','VALIDATION_ERROR');
+    const updated=await c.query('UPDATE portal_students SET status=$2,phone=COALESCE($3,phone),residence=COALESCE($4,residence),version=version+1 WHERE id=$1 RETURNING *',[before.id,status,raw.phone??null,raw.residence??null]);
+    if(raw.programId&&raw.cohortId&&raw.classId)await c.query(`UPDATE portal_student_enrollments SET program_id=$2,cohort_id=$3,class_id=$4,version=version+1 WHERE student_id=$1 AND deleted_at IS NULL`,[before.id,Number(raw.programId),Number(raw.cohortId),Number(raw.classId)]);
+    const desired=new Set(Array.isArray(raw.holds)?raw.holds.map((value:unknown)=>String(value).replace('_hold','')):[]);const current=await c.query<{hold_type:string}>("SELECT hold_type FROM portal_student_holds WHERE student_id=$1 AND status='active'",[before.id]);
+    for(const hold of desired)if(!current.rows.some(x=>x.hold_type===hold))await c.query("INSERT INTO portal_student_holds(student_id,hold_type,reason,status,placed_by) VALUES($1,$2,'Placed from student lifecycle workspace','active',$3)",[before.id,hold,actor.id]);
+    for(const hold of current.rows)if(!desired.has(hold.hold_type))await c.query("UPDATE portal_student_holds SET status='released',released_by=$3,released_at=now(),release_reason='Released from student lifecycle workspace' WHERE student_id=$1 AND hold_type=$2 AND status='active'",[before.id,hold.hold_type,actor.id]);
+    await c.query(`INSERT INTO portal_audit_logs(user_id,student_id,action,entity_type,entity_id,before_state,after_state,correlation_id) VALUES($1,$2,'student.updated','student',$3,$4::jsonb,$5::jsonb,$6::uuid)`,[actor.id,before.id,String(before.id),JSON.stringify(before),JSON.stringify(updated.rows[0]),correlationId]);return updated.rows[0];
+  });
+}
+
+export async function archiveStudent(admissionNumber:string,actor:PortalUser,correlationId:string){return transaction(async c=>{const row=await c.query<any>("UPDATE portal_students SET deleted_at=now(),version=version+1 WHERE student_number=$1 AND deleted_at IS NULL AND status IN ('withdrawn','graduated') RETURNING *",[requiredText(admissionNumber,'Admission number',80)]);if(!row.rowCount)throw new PortalError(409,'Only withdrawn or graduated students may be archived','PROTECTED_RECORD');await c.query(`INSERT INTO portal_audit_logs(user_id,student_id,action,entity_type,entity_id,before_state,correlation_id) VALUES($1,$2,'student.archived','student',$3,$4::jsonb,$5::uuid)`,[actor.id,row.rows[0].id,String(row.rows[0].id),JSON.stringify(row.rows[0]),correlationId]);return{ok:true};});}
+
+export async function updateRequest(idRaw:string,raw:any,actor:PortalUser,correlationId:string){const id=Number(idRaw),status=requiredText(raw.status,'Status',30);if(!Number.isSafeInteger(id)||!['assigned','in_progress','approved','rejected','closed'].includes(status))throw new PortalError(400,'Invalid request update','VALIDATION_ERROR');return transaction(async c=>{const before=await c.query<any>('SELECT * FROM portal_student_requests WHERE id=$1 FOR UPDATE',[id]);if(!before.rowCount)throw new PortalError(404,'Request not found','NOT_FOUND');const row=await c.query('UPDATE portal_student_requests SET status=$2,assigned_to=COALESCE(assigned_to,$3),updated_at=now() WHERE id=$1 RETURNING *',[id,status,actor.id]);await c.query(`INSERT INTO portal_audit_logs(user_id,student_id,action,entity_type,entity_id,before_state,after_state,correlation_id) VALUES($1,$2,'request.status_changed','student_request',$3,$4::jsonb,$5::jsonb,$6::uuid)`,[actor.id,before.rows[0].student_id,String(id),JSON.stringify(before.rows[0]),JSON.stringify(row.rows[0]),correlationId]);return row.rows[0];});}
